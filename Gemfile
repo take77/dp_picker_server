@@ -10,6 +10,7 @@ gem "sinatra-contrib"
 gem "sinatra-activerecord", :require => 'sinatra/activerecord'
 gem "activerecord"
 gem "rake"
+gem "bcrypt"
 
 group :development do
     gem 'sqlite3'

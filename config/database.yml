@@ -1,0 +1,11 @@
+sqlite: &sqlite
+  host: 127.0.0.1
+  adapter: sqlite3
+
+development:
+  <<: *sqlite
+  database: db/development.sqlite3
+
+test:
+  <<: *sqlite
+  database: db/test.sqlite3
