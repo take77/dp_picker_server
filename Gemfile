@@ -14,6 +14,7 @@ gem "bcrypt"
 
 group :development do
     gem 'sqlite3'
+    gem 'pry'
 end
 
 group :production do
