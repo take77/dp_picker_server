@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2020_04_03_103745) do
     t.string "password_digest", default: "", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["nickname", "password_digest"], name: "index_players_on_nickname_and_password_digest", unique: true
   end
 
   add_foreign_key "log_contents", "dp_pokemons"

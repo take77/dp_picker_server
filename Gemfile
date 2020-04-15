@@ -11,6 +11,7 @@ gem "sinatra-activerecord", :require => 'sinatra/activerecord'
 gem "activerecord"
 gem "rake"
 gem "bcrypt"
+gem 'rack-cors'
 
 group :development do
     gem 'sqlite3'

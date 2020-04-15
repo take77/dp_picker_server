@@ -1,3 +1,5 @@
+require 'bcrypt'
+
 class DpPokemon < ActiveRecord::Base
 	has_many :logs, through: :log_contents
 	has_many :log_contents
@@ -8,6 +10,8 @@ class Player < ActiveRecord::Base
 
 	validates :nickname, presence: true
 	validates :password_digest, presence: true
+
+	has_secure_password
 end
 
 class Log < ActiveRecord::Base
