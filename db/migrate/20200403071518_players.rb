@@ -6,5 +6,7 @@ class Players < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
+
+    add_index :players, [:nickname, :password_digest], unique: true
   end
 end

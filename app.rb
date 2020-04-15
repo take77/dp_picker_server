@@ -1,9 +1,12 @@
 require 'sinatra'
+require 'bcrypt'
 require 'sinatra/reloader'
 require 'sinatra/activerecord'
 require 'sinatra/json'
-require './models'
 require 'sinatra/namespace'
+require 'rack/cors'
+
+require './models'
 
 require 'pry'
 
@@ -12,12 +15,23 @@ ActiveRecord::Base.establish_connection(
     database: './db/development.sqlite3'
 )
 
-before do
-	response.headers['Access-Control-Allow-Origin'] = '*'
+use Rack::Cors do
+  allow do
+    origins 'localhost:3000'
+
+    resource '*', headers: :any,
+        methods: [:get, :post, :delete, :put, :patch, :options, :head],
+        credentials: true
+  end
 end
 
-get '/' do
-	'Hello world'
+enable :sessions
+set :session_store, Rack::Session::Pool
+
+before do
+	if session[:player_id]
+		 @current_player = Player.find(session[:player_id])
+	end
 end
 
 get '/party' do
@@ -52,7 +66,6 @@ get '/party' do
 				tp.push(p)
 			end
 		end
-		binding.pry
 	end
 
 	party =
@@ -62,7 +75,54 @@ get '/party' do
 		tp.sample(6)
 	end
 
-	binding.pry
-
 	json party
+end
+
+post '/sign_up' do
+	player = Player.new(params)
+
+	if player.save!
+		session[:player_id] = player.id
+		json({
+			status: "created",
+			logged_in: true,
+			player: player
+		})
+	else
+		json({ status: 500 })
+	end
+end
+
+post '/sign_in' do
+	player = Player.find_by(nickname: params[:nickname]).try(:authenticate, params[:password])
+
+	if player
+		session[:player_id] = player.id
+		json({
+			status: "get",
+			logged_in: true,
+			player: player
+		})
+	else
+		json({ status: 401 })
+	end
+end
+
+get '/logged_in' do
+	if @current_player
+		json({
+			logged_in: true,
+			player: @current_player
+		})
+	else
+		json({
+			logged_in: false
+		})
+	end
+end
+
+
+delete '/sign_out' do
+	session.clear
+	json({ status: 200, logged_in: false})
 end
