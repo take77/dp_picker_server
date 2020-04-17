@@ -36,14 +36,15 @@ end
 
 get '/party' do
 	# FixMe: these cord are too bad to use
+
 	if params[:base] == "true"
 		base_tp = DpPokemon.where(base_id: 0)
 	end
 
-	if base_tp.present? && params[:legend] == "true"
-		legend_tp = base_tp.legend(params[:legend])
-	elsif params[:legend] == "true"
-		legend_tp = DpPokemon.where(legend: false)
+	if base_tp.present? && params[:legend] == "false"
+		legend_tp = base_tp.where(legend: false)
+	elsif params[:legend] == "false"
+		DpPokemon.where(legend: false)
 	elsif base_tp.present?
 		legend_tp = base_tp
 	end
@@ -60,19 +61,27 @@ get '/party' do
 		tp = DpPokemon.all
 	end
 
-	if params[:weight] == "true"
-		tp.each do |p|
-			if p.weight = 2
-				tp.push(p)
-			end
-		end
+	if params[:useWeight] == "true"
+		added_contents = tp.where(weight: 2)
+		weight_tp = tp + added_contents
+	else
+		weight_tp = tp
 	end
 
-	party =
-	if params[:mem_num]
-		tp.sample(params[:mem_num])
-	else
-		tp.sample(6)
+	party = weight_tp.sample(6)
+
+	if params[:playerId]
+		player = Player.find(params[:playerId].to_i)
+		log =
+		if params[:partyTitle].present?
+			player.logs.create!(title: params[:partyTitle])
+		else
+			player.logs.create!(title: player.logs.count.to_s + "回目の選出")
+		end
+
+		party.each do |logcontent|
+			LogContent.create(log: log, dp_pokemon: logcontent)
+		end
 	end
 
 	json party
