@@ -2,7 +2,7 @@ require 'bcrypt'
 
 class DpPokemon < ActiveRecord::Base
 	has_many :logs, through: :log_contents
-	has_many :log_contents
+	has_many :log_contents, dependent: :destroy
 end
 
 class Player < ActiveRecord::Base

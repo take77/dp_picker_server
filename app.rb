@@ -87,6 +87,30 @@ get '/party' do
 	json party
 end
 
+get '/logs' do
+	player = Player.find(params[:playerId].to_i)
+	logs = player.logs
+
+	json logs
+end
+
+get '/log' do
+	log = Log.find(params[:logId].to_i)
+	party = log.dp_pokemons
+	resBox = {log: log, party: party}
+
+	json resBox
+end
+
+delete '/log' do
+	log = Log.find(params[:logId].to_i)
+	log.destroy
+	player = Player.find(params[:playerId].to_i)
+	logs = player.logs
+
+	json logs
+end
+
 post '/sign_up' do
 	player = Player.new(params)
 
