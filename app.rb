@@ -37,6 +37,10 @@ end
 get '/party' do
 	# FixMe: these cord are too bad to use
 
+	if params[:playerId]
+		player = Player.find(params[:playerId].to_i)
+	end
+
 	if params[:base] == "true"
 		base_tp = DpPokemon.where(base_id: 0)
 	end
@@ -50,15 +54,33 @@ get '/party' do
 	end
 
 	if legend_tp.present? && params[:only_dp] == "true"
-		tp = legend_tp.where(weight: 2)
+		only_dp_tp = legend_tp.where(weight: 2)
 	elsif params[:only_dp] == "true"
-		tp = DpPokemon.where(weight: 2)
+		only_dp_tp = DpPokemon.where(weight: 2)
 	elsif legend_tp.present?
-		tp = legend_tp
+		only_dp_tp = legend_tp
 	end
 
-	if tp.blank?
-		tp = DpPokemon.all
+	if only_dp_tp.blank?
+		only_dp_tp = DpPokemon.all
+	end
+
+	if player.logs && params[:pickedExcept]
+		except_list = []
+
+		player.logs.each do |log|
+			pokemons = log.dp_pokemons
+			except_list << pokemons.ids
+		end
+
+		tp =
+		if except_list.present?
+			only_dp_tp.where.not(id: except_list.flatten)
+		else
+			only_dp_tp
+		end
+	else
+		tp = only_dp_tp
 	end
 
 	if params[:useWeight] == "true"
@@ -70,13 +92,13 @@ get '/party' do
 
 	party = weight_tp.sample(6)
 
-	if params[:playerId]
-		player = Player.find(params[:playerId].to_i)
+	if player
 		log =
 		if params[:partyTitle].present?
 			player.logs.create!(title: params[:partyTitle])
 		else
-			player.logs.create!(title: player.logs.count.to_s + "回目の選出")
+			logs_num = player.logs.count + 1
+			player.logs.create!(title: logs_num.to_s + "種類目の選出")
 		end
 
 		party.each do |logcontent|
