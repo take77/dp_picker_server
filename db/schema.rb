@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(version: 2020_04_03_103745) do
 
   create_table "dp_pokemons", force: :cascade do |t|
     t.string "name", default: "", null: false
+    t.string "image"
     t.integer "base_id", default: 0, null: false
     t.boolean "legend", default: false, null: false
     t.integer "weight", default: 0, null: false

@@ -12,6 +12,7 @@ gem "activerecord"
 gem "rake"
 gem "bcrypt"
 gem 'rack-cors'
+gem 'carrierwave'
 
 group :development do
     gem 'sqlite3'

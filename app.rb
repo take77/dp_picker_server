@@ -53,9 +53,9 @@ get '/party' do
 		legend_tp = base_tp
 	end
 
-	if legend_tp.present? && params[:only_dp] == "true"
+	if legend_tp.present? && params[:onlyDp] == "true"
 		only_dp_tp = legend_tp.where(weight: 2)
-	elsif params[:only_dp] == "true"
+	elsif params[:onlyDp] == "true"
 		only_dp_tp = DpPokemon.where(weight: 2)
 	elsif legend_tp.present?
 		only_dp_tp = legend_tp
@@ -65,7 +65,7 @@ get '/party' do
 		only_dp_tp = DpPokemon.all
 	end
 
-	if player.logs && params[:pickedExcept]
+	if player && params[:pickedExcept]
 		except_list = []
 
 		player.logs.each do |log|
@@ -84,13 +84,34 @@ get '/party' do
 	end
 
 	if params[:useWeight] == "true"
-		added_contents = tp.where(weight: 2)
-		weight_tp = tp + added_contents
-	else
-		weight_tp = tp
-	end
+		weight_sum = 1
+		rand_tp = {}
 
-	party = weight_tp.sample(6)
+		tp.each do |pokemon|
+			if pokemon.weight = 2
+				rand_tp.store(weight_sum, pokemon.id)
+				rand_tp.store(weight_sum + 1, pokemon.id)
+				weight_sum += 2
+			elsif pokemon.weight = 1
+				rand_tp.store(weight_sum, pokemon.id)
+				weight_sum += 1
+			end
+		end
+
+		pick_id_list = []
+		while pick_id_list.size < 6
+			pick_id_tem = rand(1..weight_sum-1)
+			pick_id = rand_tp[pick_id_tem]
+
+			unless pick_id_list.include?(pick_id)
+				pick_id_list.push(pick_id)
+			end
+		end
+
+		party = tp.where(id: pick_id_list)
+	else
+		party = tp.sample(6)
+	end
 
 	if player
 		log =
@@ -144,7 +165,7 @@ post '/sign_up' do
 			player: player
 		})
 	else
-		json({ status: 500 })
+		json({ status: 500, logged_in: false })
 	end
 end
 
@@ -159,7 +180,7 @@ post '/sign_in' do
 			player: player
 		})
 	else
-		json({ status: 401 })
+		json({ status: 401, logged_in: false})
 	end
 end
 

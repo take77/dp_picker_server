@@ -1,6 +1,13 @@
 require 'bcrypt'
+require 'carrierwave'
+require 'carrierwave/orm/activerecord'
+
+class ImageUploader < CarrierWave::Uploader::Base
+end
 
 class DpPokemon < ActiveRecord::Base
+	mount_uploader :image, ImageUploader
+
 	has_many :logs, through: :log_contents
 	has_many :log_contents, dependent: :destroy
 end
