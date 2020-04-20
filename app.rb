@@ -11,9 +11,7 @@ require './models'
 require 'pry'
 
 ActiveRecord::Base.establish_connection(
-    adapter: 'sqlite3',
-    database: './db/development.sqlite3'
-)
+  ENV['DATABASE_URL'] )
 
 use Rack::Cors do
   allow do

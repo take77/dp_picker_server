@@ -1,2 +1,2 @@
-require './app.rb'
-run DpPokemonPickerServer
+require './app'
+run Sinatra::Application
